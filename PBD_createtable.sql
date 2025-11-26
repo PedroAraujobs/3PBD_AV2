@@ -1,11 +1,13 @@
+DROP TABLE IF EXISTS LocacaoMotorista, Manutencao, Locacao, Motorista, Reserva, Cliente, Veiculo, CategoriaVeiculo, Loja, Cidade;
+
 CREATE TABLE Cidade (
-    id_cidade INT PRIMARY KEY,
+    id_cidade INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100),
     estado CHAR(2)
 );
 
 CREATE TABLE Loja (
-    id_loja INT PRIMARY KEY,
+    id_loja INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100),
     endereco VARCHAR(200),
     id_cidade INT,
@@ -13,13 +15,13 @@ CREATE TABLE Loja (
 );
 
 CREATE TABLE CategoriaVeiculo (
-    id_categoria INT PRIMARY KEY,
+    id_categoria INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(50),
     diaria DECIMAL(10,2)
 );
 
 CREATE TABLE Veiculo (
-    id_veiculo INT PRIMARY KEY,
+    id_veiculo INT AUTO_INCREMENT PRIMARY KEY,
     placa VARCHAR(15) UNIQUE,
     modelo VARCHAR(100),
     ano INT,
@@ -31,7 +33,7 @@ CREATE TABLE Veiculo (
 );
 
 CREATE TABLE Cliente (
-    id_cliente INT PRIMARY KEY,
+    id_cliente INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100),
     cpf VARCHAR(14) UNIQUE,
     telefone VARCHAR(20),
@@ -39,7 +41,7 @@ CREATE TABLE Cliente (
 );
 
 CREATE TABLE Reserva (
-    id_reserva INT PRIMARY KEY,
+    id_reserva INT AUTO_INCREMENT PRIMARY KEY,
     id_cliente INT,
     id_loja_retirada INT,
     id_loja_retorno INT,
@@ -53,7 +55,7 @@ CREATE TABLE Reserva (
 );
 
 CREATE TABLE Locacao (
-    id_locacao INT PRIMARY KEY,
+    id_locacao INT AUTO_INCREMENT PRIMARY KEY,
     id_reserva INT UNIQUE,
     id_veiculo INT,
     data_inicio DATE,
@@ -65,7 +67,7 @@ CREATE TABLE Locacao (
 );
 
 CREATE TABLE Motorista (
-    id_motorista INT PRIMARY KEY,
+    id_motorista INT AUTO_INCREMENT PRIMARY KEY,
     nome VARCHAR(100),
     cnh VARCHAR(20) UNIQUE,
     telefone VARCHAR(20),
@@ -81,7 +83,7 @@ CREATE TABLE LocacaoMotorista (
 );
 
 CREATE TABLE Manutencao (
-    id_manutencao INT PRIMARY KEY,
+    id_manutencao INT AUTO_INCREMENT PRIMARY KEY,
     id_veiculo INT NOT NULL,
     id_locacao INT NULL,
     data_manutencao DATE NOT NULL,
@@ -89,9 +91,7 @@ CREATE TABLE Manutencao (
     tipo VARCHAR(100) NOT NULL,
     descricao TEXT,
     custo DECIMAL(10,2) NOT NULL,
-    status VARCHAR(20) 
-        CHECK (status IN ('AGENDADA', 'EM_EXECUCAO', 'CONCLUIDA', 'CANCELADA')),
-    
+    status VARCHAR(20) CHECK (status IN ('AGENDADA', 'EM_EXECUCAO', 'CONCLUIDA', 'CANCELADA')),
     FOREIGN KEY (id_veiculo) REFERENCES Veiculo(id_veiculo),
     FOREIGN KEY (id_locacao) REFERENCES Locacao(id_locacao)
 );
