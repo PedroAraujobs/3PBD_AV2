@@ -1,3 +1,18 @@
+/*
+Inserts:
+
+INSERT INTO Veiculo (placa, modelo, ano, status, id_loja_atual, id_categoria)
+VALUES (:placa, :modelo, :ano, :status, :id_loja_atual, :id_categoria);
+
+INSERT INTO Cliente (nome, cpf, telefone, email)
+VALUES (:nome, :cpf, :telefone, :email);
+
+INSERT INTO Reserva (id_cliente, id_loja_retirada, id_loja_retorno, data_reserva, periodo, inclui_motorista, status)
+VALUES (:id_cliente, :id_loja_retirada, :id_loja_retorno, :data_reserva, :periodo, :inclui_motorista, :status);
+
+*/
+
+
 -- Buscar veículos disponíveis na cidade do cliente
 SELECT 
     v.id_veiculo,
@@ -10,7 +25,11 @@ FROM Veiculo v
 JOIN CategoriaVeiculo c ON v.id_categoria = c.id_categoria
 JOIN Loja l ON v.id_loja_atual = l.id_loja
 JOIN Cidade ci ON l.id_cidade = ci.id_cidade
+LEFT JOIN Manutencao m 
+    ON m.id_veiculo = v.id_veiculo 
+    AND m.status IN ('AGENDADA', 'EM_EXECUCAO')
 WHERE v.status = 'Livre'
+  AND m.id_manutencao IS NULL
   AND ci.id_cidade = :idCidade;
 
 
@@ -24,7 +43,11 @@ SELECT
 FROM Veiculo v
 JOIN Loja l ON v.id_loja_atual = l.id_loja
 JOIN Cidade ci ON l.id_cidade = ci.id_cidade
+LEFT JOIN Manutencao m 
+    ON m.id_veiculo = v.id_veiculo 
+    AND m.status IN ('AGENDADA', 'EM_EXECUCAO')
 WHERE v.status = 'Livre'
+  AND m.id_manutencao IS NULL
   AND ci.id_cidade = (
         SELECT id_cidade 
         FROM Loja 
@@ -58,7 +81,7 @@ SELECT
     ci.nome AS cidade,
     COUNT(lo.id_locacao) AS total_locacoes,
     SUM(lo.valor_pago) AS receita_total,
-    AVG(lo.valor_pago) AS ticket_medio
+    ROUND(AVG(lo.valor_pago), 2) AS ticket_medio
 FROM Locacao lo
 JOIN Veiculo v ON lo.id_veiculo = v.id_veiculo
 JOIN Loja l ON v.id_loja_atual = l.id_loja
@@ -72,11 +95,18 @@ SELECT
     v.modelo,
     v.placa,
     l.nome AS loja,
-    ci.nome AS cidade
+    ci.nome AS cidade,
+    m.tipo,
+    m.status,
+    m.data_manutencao,
+    m.data_ultima_vistoria,
+    m.custo
 FROM Veiculo v
 JOIN Loja l ON v.id_loja_atual = l.id_loja
 JOIN Cidade ci ON l.id_cidade = ci.id_cidade
-WHERE v.status = 'Manutencao';
+JOIN Manutencao m ON m.id_veiculo = v.id_veiculo
+WHERE v.status = 'Manutencao'
+  AND m.status IN ('AGENDADA', 'EM_EXECUCAO', 'CONCLUIDA');
 
 
 -- Locações com motorista incluso

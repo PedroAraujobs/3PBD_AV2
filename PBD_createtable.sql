@@ -68,7 +68,8 @@ CREATE TABLE Motorista (
     id_motorista INT PRIMARY KEY,
     nome VARCHAR(100),
     cnh VARCHAR(20) UNIQUE,
-    telefone VARCHAR(20)
+    telefone VARCHAR(20),
+    diaria DECIMAL(10,2)
 );
 
 CREATE TABLE LocacaoMotorista (
@@ -77,4 +78,20 @@ CREATE TABLE LocacaoMotorista (
     PRIMARY KEY(id_locacao, id_motorista),
     FOREIGN KEY (id_locacao) REFERENCES Locacao(id_locacao),
     FOREIGN KEY (id_motorista) REFERENCES Motorista(id_motorista)
+);
+
+CREATE TABLE Manutencao (
+    id_manutencao INT PRIMARY KEY,
+    id_veiculo INT NOT NULL,
+    id_locacao INT NULL,
+    data_manutencao DATE NOT NULL,
+    data_ultima_vistoria DATE NOT NULL,
+    tipo VARCHAR(100) NOT NULL,
+    descricao TEXT,
+    custo DECIMAL(10,2) NOT NULL,
+    status VARCHAR(20) 
+        CHECK (status IN ('AGENDADA', 'EM_EXECUCAO', 'CONCLUIDA', 'CANCELADA')),
+    
+    FOREIGN KEY (id_veiculo) REFERENCES Veiculo(id_veiculo),
+    FOREIGN KEY (id_locacao) REFERENCES Locacao(id_locacao)
 );
